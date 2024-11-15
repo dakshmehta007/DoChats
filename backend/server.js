@@ -10,18 +10,29 @@ const messageRoutes = require("./routes/messageRoutes");
 const connectDB = require("./config/db");
 const colors = require("colors");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
+const cors = require("cors");
 
 connectDB();
-app.use(express.json())
+app.use(express.json());
+
+// CORS configuration
+app.use(cors({
+  origin: "http://localhost:3000", // Allow requests from this origin
+  methods: ["GET", "POST", "PUT", "DELETE"], // Allow these HTTP methods
+  credentials: true, // Allow cookies to be sent
+}));
+
 app.get('/', (req, res) => {
     res.send("Hello Daksh Mehta");
 });
+
+// Uncomment these if you have error handling middleware
 // app.use(notFound);
 // app.use(errorHandler);
 
 app.use("/api/user", userRoutes);
-app.use("/api/chat", chatRoutes );
-app.use("/api/message", messageRoutes );
+app.use("/api/chat", chatRoutes);
+app.use("/api/message", messageRoutes);
 
 const server = app.listen(PORT, console.log(`Server is running at port : ${PORT}`.yellow.bold));
 
@@ -30,7 +41,6 @@ const io = require("socket.io")(server, {
     cors: {
         origin: "http://localhost:3000",
     },
-    
 });
 
 io.on("connection", (socket) => {
